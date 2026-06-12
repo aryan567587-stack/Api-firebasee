@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARYAN Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+        
+        header h1 {
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-card h3 {
+            color: #64748b;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .section h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        table thead {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        table th {
+            text-align: left;
+            padding: 15px;
+            color: #94a3b8;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .api-key-cell {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #81c784;
+            word-break: break-all;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+        
+        .status-banned {
+            background: rgba(248, 113, 113, 0.2);
+            color: #f87171;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        
+        .btn-ban {
+            background: rgba(248, 113, 113, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(248, 113, 113, 0.3);
+        }
+        
+        .btn-ban:hover {
+            background: rgba(248, 113, 113, 0.3);
+        }
+        
+        .btn-unban {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+        
+        .btn-unban:hover {
+            background: rgba(74, 222, 128, 0.3);
+        }
+        
+        .btn-quota {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-quota:hover {
+            background: rgba(102, 126, 234, 0.3);
+        }
+        
+        .log-entry {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 13px;
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .log-time {
+            color: #94a3b8;
+            margin-right: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .log-action {
+            color: #64748b;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 2px 8px;
+            border-radius: 3px;
+            display: inline-block;
+            font-weight: 600;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .quota-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .quota-input-group input {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: white;
+        }
+        
+        .quota-input-group button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .btn-confirm {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔥 ARYAN ADMIN DASHBOARD</h1>
+            <a href="/aryan/logout" class="logout-btn">🚪 Logout</a>
+        </header>
+        
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>📊 Total Scans</h3>
+                <div class="stat-value">{{ stats.total_scans }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>📅 Today's Scans</h3>
+                <div class="stat-value">{{ stats.today_scans }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>🔑 Active API Keys</h3>
+                <div class="stat-value">{{ stats.active_api_keys }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>🤖 Connected Bots</h3>
+                <div class="stat-value">{{ stats.connected_bots }}</div>
+            </div>
+        </div>
+        
+        <!-- API Keys Management -->
+        <div class="section">
+            <h2>🔑 API Keys Management</h2>
+            
+            {% if api_keys %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>API Key</th>
+                        <th>Owner</th>
+                        <th>Quota Used / Max</th>
+                        <th>Created</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key in api_keys %}
+                    <tr>
+                        <td class="api-key-cell">{{ key.api_key }}</td>
+                        <td>{{ key.owner_id }}</td>
+                        <td>{{ key.quota_used }} / {{ key.quota_max }}</td>
+                        <td>{{ key.created_at[:10] }}</td>
+                        <td>
+                            <span class="status-badge {% if key.active %}status-active{% else %}status-banned{% endif %}">
+                                {% if key.active %}✓ Active{% else %}✗ Banned{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-small btn-quota" onclick="editQuota('{{ key.api_key }}', {{ key.quota_max }})">
+                                    📊 Quota
+                                </button>
+                                {% if key.active %}
+                                <button class="btn-small btn-ban" onclick="banKey('{{ key.api_key }}')">
+                                    🚫 Ban
+                                </button>
+                                {% else %}
+                                <button class="btn-small btn-unban" onclick="unbanKey('{{ key.api_key }}')">
+                                    ✅ Unban
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <p>No API keys created yet</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Activity Log -->
+        <div class="section">
+            <h2>📋 Activity Log</h2>
+            
+            {% if logs %}
+            {% for log in logs %}
+            <div class="log-entry">
+                <span class="log-time">{{ log.timestamp }}</span>
+                <span class="log-action">{{ log.action }}</span>
+                <span>{{ log.details }}</span>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <p>No recent activity</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Quota Modal -->
+    <div id="quotaModal" class="modal">
+        <div class="modal-content">
+            <h3>📊 Edit Quota</h3>
+            <p id="quotaKeyDisplay" style="margin-bottom: 15px; font-size: 12px; color: #94a3b8;"></p>
+            <div class="quota-input-group">
+                <input type="number" id="quotaInput" placeholder="New quota limit" min="0" max="10000">
+                <button onclick="saveQuota()">Save</button>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('quotaModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentEditKey = null;
+        
+        function editQuota(apiKey, currentQuota) {
+            currentEditKey = apiKey;
+            document.getElementById('quotaKeyDisplay').textContent = `API Key: ${apiKey.substring(0, 20)}...`;
+            document.getElementById('quotaInput').value = currentQuota;
+            document.getElementById('quotaModal').classList.add('show');
+        }
+        
+        function saveQuota() {
+            const newLimit = parseInt(document.getElementById('quotaInput').value);
+            if (!newLimit || newLimit < 0) {
+                alert('Please enter a valid quota');
+                return;
+            }
+            
+            fetch('/aryan/api/quota', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ api_key: currentEditKey, new_limit: newLimit })
+            }).then(r => r.json()).then(d => {
+                if (d.status === 'ok') {
+                    alert('✅ Quota updated');
+                    location.reload();
+                } else {
+                    alert('❌ Error updating quota');
+                }
+            });
+        }
+        
+        function banKey(apiKey) {
+            if (!confirm('Ban this API key? It will no longer be able to make requests.')) return;
+            
+            fetch('/aryan/api/ban', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ api_key: apiKey })
+            }).then(r => r.json()).then(d => {
+                if (d.status === 'ok') {
+                    alert('✅ API key banned');
+                    location.reload();
+                }
+            });
+        }
+        
+        function unbanKey(apiKey) {
+            if (!confirm('Unban this API key?')) return;
+            
+            fetch('/aryan/api/unban', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ api_key: apiKey })
+            }).then(r => r.json()).then(d => {
+                if (d.status === 'ok') {
+                    alert('✅ API key unbanned');
+                    location.reload();
+                }
+            });
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+    </script>
+</body>
+</html>
